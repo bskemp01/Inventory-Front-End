@@ -1,0 +1,76 @@
+.buttons {
+  background-color: #003a7d !important;
+  color: white !important;
+  font-weight: 600;
+  width: 100px;
+
+  &.cancel-button {
+    background-color: red !important;
+  }
+}
+
+.buttons:disabled {
+  opacity: 0.3;
+}
+
+.buttons-container {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  height: 80px;
+  justify-content: space-between;
+  padding: 0 15px;
+}
+
+.extension-label {
+  margin: 25px 0px 0 -15px;
+}
+
+.file-name-input {
+  margin: 0 0 5px 0;
+  width: 300px;
+}
+
+.reports-form-container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-height: 400px;
+  width: 100%;
+}
+
+.reports-options {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-top: 10px;
+  width: 100%;
+}
+
+.input-form-fields,
+.selects {
+  padding: 0 15px;
+  width: 275px;
+}
+
+.title-container {
+  align-items: center;
+  background-color: #003a7d;
+  color: white;
+  display: flex;
+  height: 50px;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.title {
+  padding-left: 15px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

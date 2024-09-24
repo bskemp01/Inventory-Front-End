@@ -1,0 +1,143 @@
+<form
+  class="SOS-container"
+  [formGroup]="salesOrderSpecificForm"
+  autocomplete="off"
+>
+  <div class="div-containers">
+    <mat-form-field class="location-selects">
+      <mat-label>Plant Location</mat-label>
+      <mat-select
+        formControlName="plantLocation"
+        (selectionChange)="changePlant()"
+      >
+        <mat-option value="">Please Choose Plant Location</mat-option>
+        <mat-option
+          *ngFor="let plantLocation of plantLocations"
+          value="{{ plantLocation }}"
+          >{{ plantLocation }}</mat-option
+        >
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="input-form-fields non-select-fields">
+      <mat-label>Area Location</mat-label>
+      <input
+        class="form-inputs"
+        matInput
+        type="text"
+        formControlName="areaLocation"
+        autocomplete="off"
+        (keydown.enter)="moveToNextField('ticketNumber')"
+      />
+    </mat-form-field>
+  </div>
+  <!-- <div class="div-containers"> -->
+  <mat-form-field class="input-form-fields non-select-fields">
+    <mat-label>Ticket Number</mat-label>
+    <input
+      matInput
+      type="number"
+      formControlName="ticketNumber"
+      autocomplete="off"
+      (keydown.enter)="moveToNextField('salesOrder')"
+    />
+  </mat-form-field>
+
+  <!-- </div> -->
+  <div class="div-containers SLD">
+    <mat-form-field class="input-form-fields non-select-fields">
+      <mat-label>Sales Order</mat-label>
+      <input
+        matInput
+        type="number"
+        formControlName="salesOrder"
+        autocomplete="off"
+        (blur)="getSalesOrderData()"
+        (keydown.enter)="getSalesOrderData()"
+      />
+    </mat-form-field>
+    <mat-form-field class="input-form-fields non-select-fields">
+      <mat-label>Line Item</mat-label>
+      <input
+        matInput
+        formControlName="lineItem"
+        [matAutocomplete]="auto"
+        placeholder="Manually enter a Line Item or select from list"
+        (blur)="setDescription(salesOrderSpecificForm.get('lineItem')?.value!)"
+        (keydown.enter)="
+          setDescription(salesOrderSpecificForm.get('lineItem')?.value!)
+        "
+        (keydown.enter)="moveToNextField('quantity')"
+      />
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        (optionSelected)="setDescription($event.option.value)"
+        (optionSelected)="moveToNextField('quantity')"
+      >
+        <mat-option
+          *ngFor="let lineItem of lineItems"
+          [value]="lineItem.lineItem"
+        >
+          {{ lineItem.lineItem }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+    <mat-form-field class="input-form-fields non-select-fields" readonly>
+      <mat-label>Description</mat-label>
+      <input readonly matInput type="text" formControlName="description" />
+      <!-- <input readonly matInput type="text" formControlName="description" /> -->
+    </mat-form-field>
+  </div>
+  <!-- <div class="div-containers"> -->
+  <mat-form-field class="input-form-fields">
+    <mat-label>Quantity</mat-label>
+    <input
+      class="form-inputs"
+      matInput
+      type="number"
+      formControlName="quantity"
+      autocomplete="off"
+    />
+  </mat-form-field>
+  <!-- </div> -->
+  <mat-form-field class="input-form-fields">
+    <mat-label>Full Name</mat-label>
+    <input
+      class="form-inputs"
+      matInput
+      type="number"
+      formControlName="quantity"
+      autocomplete="off"
+    />
+  </mat-form-field>
+  <div class="buttons-container">
+    <div>
+      <button
+        type="button"
+        mat-raised-button
+        class="buttons"
+        (click)="searchSosTicket()"
+      >
+        Edit Ticket
+      </button>
+    </div>
+    <div class="ticket-buttons-container">
+      <button
+        mat-raised-button
+        type="button"
+        class="buttons clear-button"
+        (click)="clearForm()"
+        [disabled]="isClearButtonDisabled()"
+      >
+        Clear Form
+      </button>
+      <button
+        mat-raised-button
+        class="buttons"
+        (click)="addUpdateSosTicket()"
+        [disabled]="!salesOrderSpecificForm.valid"
+      >
+        {{ updateTicket === true ? "Update Ticket" : "Save Ticket" }}
+      </button>
+    </div>
+  </div>
+</form>

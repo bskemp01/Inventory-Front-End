@@ -1,0 +1,71 @@
+.buttons {
+  background-color: #003a7d !important;
+  color: white !important;
+  font-weight: 600;
+  width: 100px;
+
+  &.cancel-button {
+    background-color: red !important;
+  }
+}
+
+.buttons:disabled {
+  opacity: 0.3;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 50px;
+  padding: 0 15px;
+
+  &.loading {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+}
+
+.form-container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 75px;
+  justify-content: space-between;
+  padding: 15px 15px 0 15px;
+
+  &.loading {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+}
+
+.input-form-fields {
+  width: 100% !important;
+}
+
+.title-container {
+  align-items: center;
+  background-color: #003a7d;
+  color: white;
+  display: flex;
+  height: 50px;
+  padding: 0 10px 0 15px;
+  justify-content: space-between;
+  width: 675px;
+
+  &.loading {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+}
+
+.loading-spinner-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  z-index: 1;
+}

@@ -1,0 +1,11 @@
+<div class="map-container">
+  <span class="text-title">Inventory Completion Counts per Location</span>
+  <div id="map" class="map"></div>
+  <button class="refresh-button" mat-flat-button (click)="refreshData()">Refresh</button>
+</div>
+<div
+  class="loading-spinner-container"
+  *ngIf="isLoadingCompletionReport$ | async"
+>
+  <app-loading></app-loading>
+</div>

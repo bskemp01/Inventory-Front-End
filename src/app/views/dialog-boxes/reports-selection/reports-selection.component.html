@@ -1,0 +1,95 @@
+<div class="title-container">
+  <span class="text-title title"
+    >Download Inventory Reports</span
+  >
+</div>
+<mat-divider></mat-divider>
+<form [formGroup]="reportsForm" class="reports-form-container">
+  <div class="reports-options">
+    <mat-form-field class="selects">
+      <mat-label>Report Type</mat-label>
+      <mat-select
+        formControlName="reportType"
+        (selectionChange)="updateDefaultFileName()"
+      >
+        <mat-option value="">Please Choose a Report Type</mat-option>
+        <mat-option
+          *ngFor="let report of reportTypes"
+          value="{{ report.value }}"
+          >{{ report.reportType }}</mat-option
+        >
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="selects">
+      <mat-label>Report</mat-label>
+      <mat-select
+        formControlName="report"
+        (selectionChange)="updateDefaultFileName()"
+      >
+        <mat-option value="">Please Choose a Report</mat-option>
+        <mat-option *ngFor="let report of reports" value="{{ report.value }}">{{
+          report.report
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <mat-form-field class="selects">
+    <mat-label>Plant Location</mat-label>
+    <mat-select
+      formControlName="plant"
+      (selectionChange)="updateDefaultFileName()"
+    >
+      <mat-option value="">Please Choose Plant Location</mat-option>
+      <mat-option
+        *ngFor="let plantLocation of plantLocations"
+        value="{{ plantLocation }}"
+        >{{ plantLocation }}</mat-option
+      >
+    </mat-select>
+  </mat-form-field>
+  <div
+    class="reports-options"
+    *ngIf="reportsForm.get('report')?.value === 'MTR'"
+  >
+    <mat-form-field class="input-form-fields">
+      <mat-label>Minimum Ticket Number</mat-label>
+      <input
+        class="form-inputs"
+        matInput
+        type="number"
+        formControlName="min"
+        autocomplete="off"
+      />
+    </mat-form-field>
+    <mat-form-field class="input-form-fields">
+      <mat-label>Maximum Ticket Number</mat-label>
+      <input
+        class="form-inputs"
+        matInput
+        type="number"
+        formControlName="max"
+        autocomplete="off"
+      />
+    </mat-form-field>
+  </div>
+</form>
+<mat-divider></mat-divider>
+<form class="buttons-container" [formGroup]="reportsForm">
+  <button mat-raised-button class="buttons cancel-button" (click)="cancel()">
+    Cancel
+  </button>
+  <mat-form-field class="file-name-input">
+    <mat-label>File Name</mat-label>
+    <input
+      matInput
+      type="text"
+      formControlName="fileName"
+      placeholder="File Name"
+      autocomplete="off"
+    />
+  </mat-form-field>
+  <span class="extension-label text-display">.XLSX</span>
+  <button mat-raised-button class="buttons" [disabled]="isDownloadDisabled()" (click)="download()">
+    Download
+  </button>
+</form>

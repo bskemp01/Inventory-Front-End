@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\dist",
+    "\\src\\app",
+    "\\src\\app\\const",
+    "\\src\\app\\models",
+    "\\src\\app\\views\\dialog-boxes",
+    "\\src\\app\\views\\inventory-apps"
+  ],
+  "PreviewInSolutionExplorer": false
+}

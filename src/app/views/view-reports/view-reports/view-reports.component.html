@@ -1,0 +1,92 @@
+<form class="view-reports-container" [formGroup]="reportsForm">
+  <div class="reports-form-container">
+    <!-- <div class="reports-options"> -->
+    <mat-form-field class="selects">
+      <mat-label>Report Type</mat-label>
+      <mat-select formControlName="reportType">
+        <mat-option value="">Please Choose a Report Type</mat-option>
+        <mat-option
+          *ngFor="let report of reportTypes"
+          value="{{ report.value }}"
+          >{{ report.reportType }}</mat-option
+        >
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="selects">
+      <mat-label>Report</mat-label>
+      <mat-select formControlName="report">
+        <mat-option value="">Please Choose a Report</mat-option>
+        <mat-option *ngFor="let report of reports" value="{{ report.value }}">{{
+          report.report
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <!-- </div> -->
+    <mat-form-field class="selects">
+      <mat-label>Plant Location</mat-label>
+      <mat-select formControlName="plant">
+        <mat-option value="">Please Choose Plant Location</mat-option>
+        <mat-option
+          *ngFor="let plantLocation of plantLocations"
+          value="{{ plantLocation }}"
+          >{{ plantLocation }}</mat-option
+        >
+      </mat-select>
+    </mat-form-field>
+    <div class="buttons-container">
+      <button
+        mat-raised-button
+        class="buttons"
+        [disabled]="isViewReportsDisabled()"
+        (click)="viewReport()"
+      >
+        View Report
+      </button>
+      <button
+        mat-raised-button
+        class="buttons"
+        (click)="downloadTable()"
+        [disabled]="!reportData.length"
+      >
+        Download Report
+      </button>
+    </div>
+  </div>
+  <div
+    class="reports-options"
+    *ngIf="reportsForm.get('report')?.value === 'MTR'"
+  >
+    <mat-form-field class="input-form-fields">
+      <mat-label>Minimum Ticket Number</mat-label>
+      <input
+        class="form-inputs"
+        matInput
+        type="number"
+        formControlName="min"
+        autocomplete="off"
+      />
+    </mat-form-field>
+    <mat-form-field class="input-form-fields">
+      <mat-label>Maximum Ticket Number</mat-label>
+      <input
+        class="form-inputs"
+        matInput
+        type="number"
+        formControlName="max"
+        autocomplete="off"
+      />
+    </mat-form-field>
+  </div>
+  <div class="table-container ag-theme-alpine">
+    <ag-grid-angular
+      style="width: 100%; height: 100%"
+      class="ag-theme-alpine"
+      [overlayLoadingTemplate]="'Please select a report to view'"
+      [paginationAutoPageSize]="true"
+      [pagination]="true"
+      suppressCellSelection="true"
+      (gridReady)="onGridReady($event)"
+      (rowClicked)="rowClicked($event)"
+    ></ag-grid-angular>
+  </div>
+</form>

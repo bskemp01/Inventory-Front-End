@@ -1,0 +1,13 @@
+<div class="tab-container" [ngClass]="{ loading: isLoading$.value }">
+  <mat-tab-group (selectedTabChange)="onTabChanged($event)">
+    <mat-tab label="Unrestricted">
+      <app-unrestricted></app-unrestricted>
+    </mat-tab>
+    <mat-tab label="Sales Order Specific">
+      <app-sales-order-specific></app-sales-order-specific>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+<div class="loading-spinner-container" *ngIf="(isLoading$ | async) === true">
+  <app-loading></app-loading>
+</div>

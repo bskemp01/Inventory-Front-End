@@ -1,0 +1,13 @@
+**.json
+**.js
+**.md
+.gitignore
+.editorconfig
+**/node_modules/**
+**/.angular/**
+**/.vs/**
+**/dist/**
+**/.vscode/**
+**/index.html
+**/main.ts
+**.config

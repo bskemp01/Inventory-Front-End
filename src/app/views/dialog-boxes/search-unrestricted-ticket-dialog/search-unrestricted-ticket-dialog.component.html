@@ -1,0 +1,41 @@
+<div class="title-container" [ngClass]="{'loading': isLoading$.value}">
+  <span class="text-title"
+    >Search for existing Unrestricted Ticket</span
+  >
+</div>
+<mat-divider></mat-divider>
+<form
+  class="form-container"
+  [formGroup]="searchCriteriaForm"
+  autocomplete="off"
+  [ngClass]="{'loading': isLoading$.value}"
+>
+  <mat-form-field class="input-form-fields">
+    <mat-label>Ticket Number</mat-label>
+    <input
+      class="form-inputs"
+      matInput
+      type="text"
+      formControlName="ticketNumber"
+      autocomplete="off"
+      (keydown.enter)="searchForEntry()"
+    />
+  </mat-form-field>
+</form>
+<mat-divider></mat-divider>
+<div class="buttons-container" [ngClass]="{'loading': isLoading$.value}">
+  <button mat-raised-button class="buttons cancel-button" (click)="cancel()">
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    class="buttons"
+    [disabled]="!searchCriteriaForm.valid"
+    (click)="searchForEntry()"
+  >
+    Search
+  </button>
+</div>
+<div class="loading-spinner-container" *ngIf="(isLoading$ | async) === true">
+  <app-loading></app-loading>
+</div>

@@ -1,0 +1,67 @@
+.buttons-container {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 700px;
+}
+
+.buttons {
+  background-color: #003a7d !important;
+  color: white !important;
+  font-weight: 600;
+  width: 125px;
+
+  &.clear-button {
+    background-color: red !important;
+    margin-right: 10px;
+  }
+}
+
+.buttons:disabled {
+  opacity: 0.3;
+}
+
+.div-containers {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 49%;
+  &.SLD {
+    width: 75%;
+  }
+}
+
+.input-form-fields,
+.location-selects {
+  width: 325px;
+}
+
+.location-selects-container {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 700px;
+}
+
+.SOS-container {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 25px;
+}
+
+.ticket-buttons-container {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

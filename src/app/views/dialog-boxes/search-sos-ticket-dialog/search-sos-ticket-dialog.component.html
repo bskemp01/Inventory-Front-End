@@ -1,0 +1,64 @@
+<div class="title-container">
+  <span class="text-title"
+    >Search for existing Sales Order Specific Ticket</span
+  >
+</div>
+<mat-divider></mat-divider>
+<form
+  class="form-container"
+  [formGroup]="searchCriteriaForm"
+  autocomplete="off"
+>
+  <mat-form-field class="input-form-fields">
+    <mat-label>Ticket Number</mat-label>
+    <input
+      class="form-inputs"
+      matInput
+      type="text"
+      formControlName="ticketNumber"
+      autocomplete="off"
+      (keydown.enter)="moveToNextField('salesOrder')"
+    />
+  </mat-form-field>
+  <mat-form-field class="input-form-fields">
+    <mat-label>Sales Order</mat-label>
+    <input
+      class="form-inputs"
+      matInput
+      type="text"
+      formControlName="salesOrder"
+      autocomplete="off"
+      (blur)="getLineItems()"
+      (keydown.enter)="getLineItems()"
+    />
+  </mat-form-field>
+  <mat-form-field class="input-form-fields">
+    <mat-label>Line Item</mat-label>
+    <input
+      class="form-inputs"
+      matInput
+      [matAutocomplete]="auto"
+      type="text"
+      formControlName="lineItem"
+    />
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let lineItem of lineItems" [value]="lineItem">
+        {{ lineItem }}
+      </mat-option>
+    </mat-autocomplete>
+  </mat-form-field>
+</form>
+<mat-divider></mat-divider>
+<div class="buttons-container">
+  <button mat-raised-button class="buttons cancel-button" (click)="cancel()">
+    Cancel
+  </button>
+  <button
+    mat-raised-button
+    class="buttons"
+    [disabled]="!searchCriteriaForm.valid"
+    (click)="searchForEntry()"
+  >
+    Search
+  </button>
+</div>

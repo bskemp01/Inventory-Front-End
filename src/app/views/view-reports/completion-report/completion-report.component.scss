@@ -1,0 +1,36 @@
+.completion-report-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.columnChart {
+  height: 100%;
+  width: 100%;
+}
+
+.location-checkbox {
+  width: 200px;
+}
+
+.menu-button {
+  background-color: #003a7d !important;
+  color: white !important;
+  cursor: pointer;
+  position: absolute;
+  right: 110px;
+  top: 50px;
+  z-index: 1000;
+}
+
+.refresh-button {
+  background-color: #003a7d !important;
+  color: white !important;
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 50px;
+  z-index: 1000;
+}

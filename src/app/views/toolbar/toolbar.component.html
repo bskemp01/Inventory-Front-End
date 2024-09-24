@@ -1,0 +1,72 @@
+<div class="toolbar">
+  <div class="title-container">
+    <img class="hormann-logo" src="assets/images/hormann_logo.jpg" />
+    <span class="title">Year End Inventory System</span>
+  </div>
+
+  <div class="reports-container">
+    <button
+      [disableRipple]="true"
+      mat-flat-button
+      class="reports-button text-title"
+      (click)="inventoryApps()"
+    >
+      Enter Tickets
+    </button>
+    <button
+      [disableRipple]="true"
+      mat-flat-button
+      class="reports-button text-title"
+      [matMenuTriggerFor]="menu"
+    >
+      Reports
+    </button>
+    <mat-menu #menu="matMenu" xPosition="before" class="reports-menu">
+      <div class="report-spans">
+        <button
+          mat-menu-item
+          class="reports-menu-button text-title"
+          (click)="viewReports()"
+        >
+          View Reports
+        </button>
+        <button
+          mat-menu-item
+          class="reports-menu-button text-title"
+          (click)="openReportsSelection()"
+        >
+          Download Reports
+        </button>
+        <button
+          mat-menu-item
+          class="reports-menu-button text-title"
+          [matMenuTriggerFor]="managementReports"
+        >
+          Management Reports
+        </button>
+      </div>
+    </mat-menu>
+    <mat-menu
+      #managementReports="matMenu"
+      xPosition="before"
+      class="reports-menu"
+    >
+      <div class="report-spans">
+        <button
+          mat-menu-item
+          class="completion-reports-button text-title"
+          (click)="openCompletionReport()"
+        >
+          Completion Chart
+        </button>
+        <button
+          mat-menu-item
+          class="completion-reports-button text-title"
+          (click)="openLocationMap()"
+        >
+          Location Map
+        </button>
+      </div>
+    </mat-menu>
+  </div>
+</div>

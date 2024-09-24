@@ -1,0 +1,44 @@
+<div class="completion-report-container">
+  <div>
+    <button class="menu-button" mat-button [matMenuTriggerFor]="menu">
+      Select Locations
+    </button>
+    <mat-menu #menu="matMenu">
+      <mat-checkbox
+        class="location-checkbox"
+        [disableRipple]="true"
+        [checked]="areAllLocationsSelected()"
+        (click)="$event.stopPropagation()"
+        (change)="toggleAllLocations()"
+        >Toggle All Locations</mat-checkbox
+      >
+      <mat-divider></mat-divider>
+      <div *ngFor="let location of locations">
+        <mat-checkbox
+          [disableRipple]="true"
+          [(ngModel)]="location.selected"
+          (click)="$event.stopPropagation()"
+          (change)="itemSelected()"
+          >{{ location.name }}</mat-checkbox
+        >
+      </div>
+    </mat-menu>
+  </div>
+  <button class="refresh-button" mat-flat-button (click)="refreshData()">
+    Refresh
+  </button>
+  <highcharts-chart
+    #columnChart
+    id="columnChart"
+    class="columnChart"
+    [Highcharts]="highcharts"
+    [options]="chartOptions"
+    [(update)]="updateFlag"
+  ></highcharts-chart>
+</div>
+<div
+  class="loading-spinner-container"
+  *ngIf="isLoadingCompletionReport$ | async"
+>
+  <app-loading></app-loading>
+</div>
