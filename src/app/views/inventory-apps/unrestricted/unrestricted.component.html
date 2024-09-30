@@ -1,108 +1,106 @@
 <form class="SOS-container" [formGroup]="unrestrictedForm" autocomplete="off">
-  <div class="div-containers">
-    <mat-form-field class="location-selects">
-      <mat-label>Plant Location</mat-label>
-      <mat-select
-        formControlName="plantLocation"
-        (selectionChange)="changePlant()"
-      >
-        <mat-option value="">Please Choose Plant Location</mat-option>
-        <mat-option
-          *ngFor="let plantLocation of plantLocations"
-          value="{{ plantLocation }}"
-          >{{ plantLocation }}</mat-option
-        >
-      </mat-select>
-    </mat-form-field>
-    <mat-form-field class="location-selects">
-      <mat-label>Storage Location</mat-label>
-      <mat-select formControlName="storageLocation">
-        <mat-option value="">Please Choose Storage Location</mat-option>
-        <mat-option
-          *ngFor="let storagelocation of storageLocations"
-          value="{{ storagelocation }}"
-          >{{ storagelocation }}</mat-option
-        >
-      </mat-select>
-    </mat-form-field>
-  </div>
-  <div class="div-containers">
-    <mat-form-field class="input-form-fields">
-      <mat-label>Area Location</mat-label>
-      <input
-        class="form-inputs"
-        matInput
-        type="text"
-        formControlName="areaLocation"
-        autocomplete="off"
-        (keydown.enter)="moveToNextField('ticketNumber')"
-      />
-    </mat-form-field>
-    <mat-form-field class="input-form-fields">
-      <mat-label>Ticket Number</mat-label>
-      <input
-        matInput
-        type="text"
-        formControlName="ticketNumber"
-        autocomplete="off"
-        (keydown.enter)="moveToNextField('partNumber')"
-      />
-    </mat-form-field>
-  </div>
-  <div class="div-containers">
-    <mat-form-field class="input-form-fields">
-      <mat-label>Part Number</mat-label>
-      <input
-        matInput
-        type="text"
-        formControlName="partNumber"
-        autocomplete="off"
-        (blur)="getUnrestrictedRowData()"
-        (keydown.enter)="getUnrestrictedRowData()"
-      />
-    </mat-form-field>
-    <mat-form-field class="input-form-fields" readonly>
-      <mat-label>Description</mat-label>
-      <input
-        readonly
-        matInput
-        type="text"
-        formControlName="description"
-        autocomplete="off"
-      />
-    </mat-form-field>
-  </div>
-  <div class="div-containers">
-    <mat-form-field class="input-form-fields" readonly>
-      <mat-label>Unit of Measure</mat-label>
-      <input
-        readonly
-        matInput
-        type="text"
-        formControlName="unitOfMeasure"
-        autocomplete="off"
-        (keydown.enter)="moveToNextField('quantity')"
-      />
-    </mat-form-field>
-    <mat-form-field class="input-form-fields">
-      <mat-label>Quantity</mat-label>
-      <input
-        class="form-inputs"
-        matInput
-        type="number"
-        formControlName="quantity"
-        autocomplete="off"
-      />
-    </mat-form-field>
-  </div>
   <mat-form-field class="input-form-fields">
     <mat-label>Full Name</mat-label>
+    <input
+      class="form-inputs"
+      matInput
+      type="text"
+      placeholder="i.e. - &quot;John Smith&quot;"
+      formControlName="userEntered"
+      autocomplete="off"
+      (keydown.enter)="moveToNextField('plantLocation')"
+    />
+  </mat-form-field>
+  <mat-form-field class="location-selects">
+    <mat-label>Plant Location</mat-label>
+    <mat-select
+      formControlName="plantLocation"
+      (selectionChange)="changePlant()"
+    >
+      <mat-option value="">Please Choose Plant Location</mat-option>
+      <mat-option
+        *ngFor="let plantLocation of plantLocations"
+        value="{{ plantLocation }}"
+        >{{ plantLocation }}</mat-option
+      >
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field class="location-selects">
+    <mat-label>Storage Location</mat-label>
+    <mat-select
+      formControlName="storageLocation"
+      (selectionChange)="moveToNextField('areaLocation')"
+    >
+      <mat-option value="">Please Choose Storage Location</mat-option>
+      <mat-option
+        *ngFor="let storagelocation of storageLocations"
+        value="{{ storagelocation }}"
+        >{{ storagelocation }}</mat-option
+      >
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field class="input-form-fields">
+    <mat-label>Area Location</mat-label>
+    <input
+      class="form-inputs"
+      matInput
+      type="text"
+      formControlName="areaLocation"
+      autocomplete="off"
+      (keydown.enter)="moveToNextField('ticketNumber')"
+    />
+  </mat-form-field>
+  <mat-form-field class="input-form-fields">
+    <mat-label>Ticket Number</mat-label>
+    <input
+      matInput
+      type="text"
+      formControlName="ticketNumber"
+      autocomplete="off"
+      (keydown.enter)="moveToNextField('partNumber')"
+    />
+  </mat-form-field>
+  <mat-form-field class="input-form-fields">
+    <mat-label>Part Number</mat-label>
+    <input
+      matInput
+      type="text"
+      formControlName="partNumber"
+      autocomplete="off"
+      (blur)="getUnrestrictedRowData()"
+      (keydown.enter)="getUnrestrictedRowData()"
+    />
+  </mat-form-field>
+  <mat-form-field class="input-form-fields" readonly>
+    <mat-label>Description</mat-label>
+    <input
+      readonly
+      matInput
+      type="text"
+      formControlName="description"
+      autocomplete="off"
+    />
+  </mat-form-field>
+  <mat-form-field class="input-form-fields" readonly>
+    <mat-label>Unit of Measure</mat-label>
+    <input
+      readonly
+      matInput
+      type="text"
+      formControlName="unitOfMeasure"
+      autocomplete="off"
+      (keydown.enter)="moveToNextField('quantity')"
+    />
+  </mat-form-field>
+  <mat-form-field class="input-form-fields">
+    <mat-label>Quantity</mat-label>
     <input
       class="form-inputs"
       matInput
       type="number"
       formControlName="quantity"
       autocomplete="off"
+      (keydown.enter)="addUnrestrictedTicket()"
     />
   </mat-form-field>
   <div class="buttons-container">

@@ -43,7 +43,10 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
     private yearEndInventoryService: YearEndInventoryStateService,
   ) {
     this.salesOrderSpecificForm = new FormGroup<SalesOrderSpecificModel>({
-      plantLocation: new FormControl('', Validators.required),
+      plantLocation: new FormControl(
+        { value: '', disabled: true },
+        Validators.required,
+      ),
       areaLocation: new FormControl(
         { value: null, disabled: true },
         Validators.required,
@@ -57,7 +60,11 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
         Validators.required,
       ),
       lineItem: new FormControl(
-        { value: '', disabled: true },
+        { value: null, disabled: true },
+        Validators.required,
+      ),
+      material: new FormControl(
+        { value: null, disabled: true },
         Validators.required,
       ),
       description: new FormControl({ value: null, disabled: true }),
@@ -65,6 +72,7 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
         { value: null, disabled: true },
         Validators.required,
       ),
+      userEntered: new FormControl('', Validators.required),
     });
   }
 
@@ -98,20 +106,19 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
 
   addUpdateSosTicket() {
     const formValue = this.salesOrderSpecificForm.value;
-    const lineItemArray = formValue.lineItem?.split('-');
     const sl = formValue.plantLocation === '2810' || '2811' ? '9000' : '1000';
 
     this.sosTicket = {
       plantLocation: +formValue.plantLocation,
       storageLocation: +sl,
       areaLocation: formValue.areaLocation,
-      material: lineItemArray.slice(1).join(' ').trim() ?? '',
+      material: formValue.material,
       ticketNumber: +formValue.ticketNumber,
       salesOrder: +formValue.salesOrder,
-      lineItem: +lineItemArray[0].trim() ?? +formValue.lineItem,
+      lineItem: formValue.lineItem,
       description: formValue.description,
       quantity: formValue.quantity,
-      userEntered: 'N/A',
+      userEntered: formValue.userEntered,
     };
 
     if (this.updateTicket) {
@@ -128,7 +135,8 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
       areaLocation: null,
       ticketNumber: null,
       salesOrder: null,
-      lineItem: '',
+      lineItem: null,
+      material: null,
       description: null,
       quantity: null,
     });
@@ -159,18 +167,27 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
     if (nextField) {
       nextField.markAsTouched();
 
+      console.log(this.el.nativeElement);
       const element = this.el.nativeElement.querySelector(
         `[formControlName="${fieldName}"]`,
       );
 
       if (element) {
-        if (element.tagName.toLowerCase() === 'mat-select') {
-          // Open the MatSelect dropdown
-          element.click(); // You can use other methods like 'dispatchEvent' if 'click' doesn't work
-        } else if (element instanceof HTMLInputElement) {
-          // Set focus if the HTML element is an input
-          element.focus();
-        }
+        setTimeout(() => {
+          if (element.tagName.toLowerCase() === 'mat-select') {
+            // Open the MatSelect dropdown
+            element.click();
+          } else if (element instanceof HTMLInputElement) {
+            // Set focus if the HTML element is an input
+            element.focus();
+          } else {
+            // Check if the element is a mat-form-field and focus its input
+            const inputElement = element.querySelector('input');
+            if (inputElement) {
+              inputElement.focus();
+            }
+          }
+        }, 0); // Delay to allow the DOM element to be ready
       }
     }
   }
@@ -182,6 +199,7 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
         lineItem: `${salesOrder.item} - ${salesOrder.material}`,
       });
     });
+    this.lineItems.sort((a, b) => a.value - b.value);
     this.moveToNextField('lineItem');
   }
 
@@ -201,7 +219,8 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
             areaLocation: foundTicket.areaLocation,
             ticketNumber: foundTicket.ticketNumber?.toString(),
             salesOrder: foundTicket.salesOrder,
-            lineItem: `${foundTicket.lineItem} - ${foundTicket.material}`,
+            lineItem: foundTicket.lineItem,
+            material: foundTicket.material,
             description: foundTicket.description,
             quantity: foundTicket.quantity,
           });
@@ -210,31 +229,30 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
       });
   }
 
-  setDescription(value: string) {
+  setDescription(value: number) {
     if (value !== null) {
-      let item = value.trim(); // Initialize with the trimmed value
-      // Check if the value contains a '-'
-      if (value.includes('-')) {
-        const itemParts = value.split('-'); // Split the value by '-'
-        item = itemParts[0].trim(); // Get the first part and trim whitespaces
-      }
+      let item = value;
 
       const matchingSalesOrder = this.salesOrderData.find(
-        (salesOrder) => salesOrder.item?.toString() === item,
+        (salesOrder) => salesOrder?.item === item,
       );
 
       if (matchingSalesOrder) {
         this.salesOrderSpecificForm.patchValue({
+          material: matchingSalesOrder.material,
           description: matchingSalesOrder.materialDescription,
         });
       } else {
+        this.moveToNextField('material');
         this.salesOrderSpecificForm.patchValue({
+          material: null,
           description: 'N/A',
         });
       }
     } else {
       this.salesOrderSpecificForm.patchValue({
-        lineItem: '',
+        lineItem: null,
+        material: null,
         description: null,
       });
     }
@@ -254,7 +272,8 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
       areaLocation: null,
       ticketNumber: null,
       salesOrder: null,
-      lineItem: '',
+      lineItem: null,
+      material: null,
       description: null,
       quantity: null,
     });
@@ -269,7 +288,8 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
       areaLocation: null,
       ticketNumber: null,
       salesOrder: null,
-      lineItem: '',
+      lineItem: null,
+      material: null,
       description: null,
       quantity: null,
     });
@@ -284,6 +304,22 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
   //**************************************************************
 
   setFormControls() {
+    // Subscribe to value changes of userEntered first
+    this.salesOrderSpecificForm
+      .get('userEntered')!
+      .valueChanges.subscribe((userEnteredValue) => {
+        const plantLocationControl =
+          this.salesOrderSpecificForm.get('plantLocation');
+
+        // Enable plantLocation only when userEntered is filled
+        if (userEnteredValue !== null && userEnteredValue !== '') {
+          plantLocationControl!.enable();
+        } else {
+          plantLocationControl!.disable();
+        }
+      });
+
+    // Subscribe to value changes of plantLocation
     this.salesOrderSpecificForm
       .get('plantLocation')!
       .valueChanges.subscribe((plantLocationValue) => {
@@ -293,27 +329,36 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
           this.salesOrderSpecificForm.get('ticketNumber');
         const salesOrderControl = this.salesOrderSpecificForm.get('salesOrder');
         const lineItemControl = this.salesOrderSpecificForm.get('lineItem');
+        const materialControl = this.salesOrderSpecificForm.get('material');
         const descriptionControl =
           this.salesOrderSpecificForm.get('description');
         const quantityControl = this.salesOrderSpecificForm.get('quantity');
+        const userEnteredValue =
+          this.salesOrderSpecificForm.get('userEntered')?.value;
 
-        if (plantLocationValue !== '') {
-          // Enable other controls when plantLocation and storageLocationValue is filled
+        if (
+          plantLocationValue !== '' &&
+          userEnteredValue !== null &&
+          userEnteredValue !== ''
+        ) {
+          // Enable other controls when userEntered and plantLocation are filled
           areaLocationControl!.enable();
           ticketNumberControl!.enable();
           salesOrderControl!.enable();
           lineItemControl!.enable();
+          materialControl!.enable();
           descriptionControl!.enable();
           quantityControl!.enable();
-          setTimeout(() => {
-            this.moveToNextField('areaLocation');
-          }, 100);
+          // setTimeout(() => {
+          //   this.moveToNextField('areaLocation');
+          // }, 100);
         } else {
-          // Disable other controls when plantLocation is empty
+          // Disable other controls when plantLocation or userEntered is empty
           areaLocationControl!.disable();
           ticketNumberControl!.disable();
           salesOrderControl!.disable();
           lineItemControl!.disable();
+          materialControl!.disable();
           descriptionControl!.disable();
           quantityControl!.disable();
         }

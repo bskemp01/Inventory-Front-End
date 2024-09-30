@@ -31,15 +31,21 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
   unrestrictedForm!: FormGroup<UnrestrictedModel>;
 
   private sub = new Subscription();
-  
+
   constructor(
     private dialog: MatDialog,
     private el: ElementRef,
     private yearEndInventoryService: YearEndInventoryStateService,
   ) {
     this.unrestrictedForm = new FormGroup<UnrestrictedModel>({
-      plantLocation: new FormControl('', Validators.required),
-      storageLocation: new FormControl('', Validators.required),
+      plantLocation: new FormControl(
+        { value: '', disabled: true },
+        Validators.required,
+      ),
+      storageLocation: new FormControl(
+        { value: '', disabled: true },
+        Validators.required,
+      ),
       areaLocation: new FormControl(
         { value: null, disabled: true },
         Validators.required,
@@ -64,6 +70,7 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
         { value: null, disabled: true },
         Validators.required,
       ),
+      userEntered: new FormControl('', Validators.required),
     });
   }
 
@@ -88,7 +95,10 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
           this.unrestrictedRowDataError = state.unrestrictedRowDataError;
           if (state.unrestrictedRowDataError) {
             this.unrestrictedRowData = {};
-            this.unrestrictedRowData = {materialDescription: null, altUnitOfMeasure: null};
+            this.unrestrictedRowData = {
+              materialDescription: null,
+              altUnitOfMeasure: null,
+            };
             this.setDescription();
           }
         }),
@@ -96,6 +106,12 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
   }
 
   addUnrestrictedTicket() {
+    if (this.unrestrictedForm.invalid) {
+      // Optionally, mark all fields as touched to trigger validation messages
+      this.unrestrictedForm.markAllAsTouched();
+      return; // Stop the method if the form is invalid
+    }
+
     const formValue = this.unrestrictedForm.value;
 
     this.unrestrictedTicket = {
@@ -107,7 +123,7 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
       quantity: formValue.quantity!,
       plantLocation: +formValue.plantLocation!,
       areaLocation: formValue.areaLocation!,
-      userEntered: 'N/A',
+      userEntered: formValue.userEntered,
     };
 
     if (this.updateTicket) {
@@ -166,13 +182,21 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
       );
 
       if (element) {
-        if (element.tagName.toLowerCase() === 'mat-select') {
-          // Open the MatSelect dropdown
-          element.click(); // You can use other methods like 'dispatchEvent' if 'click' doesn't work
-        } else if (element instanceof HTMLInputElement) {
-          // Set focus if the HTML element is an input
-          element.focus();
-        }
+        setTimeout(() => {
+          if (element.tagName.toLowerCase() === 'mat-select') {
+            // Open the MatSelect dropdown
+            element.click(); // You can use other methods like 'dispatchEvent' if 'click' doesn't work
+          } else if (element instanceof HTMLInputElement) {
+            // Set focus if the HTML element is an input
+            element.focus();
+          } else {
+            // Check if the element is a mat-form-field and focus its input
+            const inputElement = element.querySelector('input');
+            if (inputElement) {
+              inputElement.focus();
+            }
+          }
+        }, 0); // Delay ensures DOM element is ready
       }
     }
   }
@@ -255,10 +279,29 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
 
   setFormControls() {
     this.unrestrictedForm
+      .get('userEntered')!
+      .valueChanges.subscribe((userEnteredValue) => {
+        const plantLocationControl = this.unrestrictedForm.get('plantLocation');
+        const storageLocationControl =
+          this.unrestrictedForm.get('storageLocation');
+
+        // Enable plantLocation and storageLocation only when userEntered is filled
+        if (userEnteredValue !== null && userEnteredValue !== '') {
+          plantLocationControl!.enable();
+          storageLocationControl!.enable();
+        } else {
+          plantLocationControl!.disable();
+          storageLocationControl!.disable();
+        }
+      });
+
+    this.unrestrictedForm
       .get('plantLocation')!
       .valueChanges.subscribe((plantLocationValue) => {
         const storageLocationValue =
           this.unrestrictedForm.get('storageLocation')?.value;
+        const userEnteredValue =
+          this.unrestrictedForm.get('userEntered')?.value;
         const areaLocationControl = this.unrestrictedForm.get('areaLocation');
         const ticketNumberControl = this.unrestrictedForm.get('ticketNumber');
         const partNumberControl = this.unrestrictedForm.get('partNumber');
@@ -266,8 +309,13 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
         const unitOfMeasureControl = this.unrestrictedForm.get('unitOfMeasure');
         const quantityControl = this.unrestrictedForm.get('quantity');
 
-        if (plantLocationValue !== '' && storageLocationValue !== '') {
-          // Enable other controls when plantLocation and storageLocationValue is filled
+        if (
+          plantLocationValue !== '' &&
+          storageLocationValue !== '' &&
+          userEnteredValue !== null &&
+          userEnteredValue !== ''
+        ) {
+          // Enable other controls when plantLocation, storageLocation, and userEntered are filled
           areaLocationControl!.enable();
           ticketNumberControl!.enable();
           partNumberControl!.enable();
@@ -275,7 +323,7 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
           unitOfMeasureControl!.enable();
           quantityControl!.enable();
         } else {
-          // Disable other controls when plantLocation is empty
+          // Disable other controls when plantLocation, storageLocation, or userEntered is empty
           areaLocationControl!.disable();
           ticketNumberControl!.disable();
           partNumberControl!.disable();
@@ -290,6 +338,8 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
       .valueChanges.subscribe((storageLocationValue) => {
         const plantLocationValue =
           this.unrestrictedForm.get('plantLocation')?.value;
+        const userEnteredValue =
+          this.unrestrictedForm.get('userEntered')?.value;
         const areaLocationControl = this.unrestrictedForm.get('areaLocation');
         const ticketNumberControl = this.unrestrictedForm.get('ticketNumber');
         const partNumberControl = this.unrestrictedForm.get('partNumber');
@@ -297,19 +347,24 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
         const unitOfMeasureControl = this.unrestrictedForm.get('unitOfMeasure');
         const quantityControl = this.unrestrictedForm.get('quantity');
 
-        if (storageLocationValue !== '' && plantLocationValue !== '') {
-          // Enable other controls when plantLocation and storageLocationControl is filled
+        if (
+          storageLocationValue !== '' &&
+          plantLocationValue !== '' &&
+          userEnteredValue !== null &&
+          userEnteredValue !== ''
+        ) {
+          // Enable other controls when plantLocation, storageLocation, and userEntered are filled
           areaLocationControl!.enable();
           ticketNumberControl!.enable();
           partNumberControl!.enable();
           descriptionControl!.enable();
           unitOfMeasureControl!.enable();
           quantityControl!.enable();
-          setTimeout(() => {
-            this.moveToNextField('areaLocation');
-          }, 100);
+          // setTimeout(() => {
+          //   this.moveToNextField('areaLocation');
+          // }, 100);
         } else {
-          // Disable other controls when plantLocation is empty
+          // Disable other controls when plantLocation, storageLocation, or userEntered is empty
           areaLocationControl!.disable();
           ticketNumberControl!.disable();
           partNumberControl!.disable();

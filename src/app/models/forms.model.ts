@@ -6,9 +6,11 @@ export interface SalesOrderSpecificModel {
   areaLocation?: FormControl<string | null | undefined>;
   ticketNumber?: FormControl<string | null | undefined>;
   salesOrder?: FormControl<number | null | undefined>;
-  lineItem?: FormControl<string | null | undefined>;
+  lineItem?: FormControl<number | null | undefined>;
+  material?: FormControl<string | null | undefined>;
   description?: FormControl<string | null | undefined>;
   quantity?: FormControl<number | null | undefined>;
+  userEntered?: FormControl<string | null | undefined>;
 }
 
 export interface UnrestrictedModel {
@@ -20,6 +22,7 @@ export interface UnrestrictedModel {
   description?: FormControl<string | null | undefined>;
   unitOfMeasure?: FormControl<string | null | undefined>;
   quantity?: FormControl<number | null | undefined>;
+  userEntered?: FormControl<string | null | undefined>;
 }
 
 export interface ReportsForm {
