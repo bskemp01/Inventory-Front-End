@@ -20,4 +20,7 @@ export interface UnrestrictedTicketModel {
     plantLocation?: number;
     areaLocation?: string;
     userEntered?: string;
+    ticket_Entered?: string | Date;
+    user_Modified?: string;
+    ticket_Modified?: string | Date;
 }

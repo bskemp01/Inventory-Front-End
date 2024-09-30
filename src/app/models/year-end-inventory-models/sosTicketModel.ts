@@ -21,4 +21,7 @@ export interface SosTicketModel {
     quantity?: number;
     areaLocation?: string;
     userEntered?: string;
+    ticket_Entered?: string | Date;
+    user_Modified?: string;
+    ticket_Modified?: string | Date;
 }

@@ -14,6 +14,7 @@ import { SearchUnrestrictedTicketDialogComponent } from '../../dialog-boxes/sear
 import { Subscription } from 'rxjs';
 import { distinctUntilChangedWithProp } from 'src/app/utils/equality-utils';
 import { ActiveListData } from 'src/app/models/year-end-inventory-models/activeListData';
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-unrestricted',
@@ -26,7 +27,8 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
   updateTicket = false;
   unrestrictedRowData!: ActiveListData;
   unrestrictedRowDataError = false;
-  unrestrictedTicket!: UnrestrictedTicketModel;
+  unrestrictedTicket: UnrestrictedTicketModel;
+  unrestrictedUpdateTicket: UnrestrictedTicketModel;
 
   unrestrictedForm!: FormGroup<UnrestrictedModel>;
 
@@ -113,6 +115,8 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
     }
 
     const formValue = this.unrestrictedForm.value;
+    const currentTime = new Date().toISOString();
+    const dateTime = formatDate(currentTime, 'yyyy-MM-ddTHH:mm:ss', 'en-US', '-0500');
 
     this.unrestrictedTicket = {
       ticketNumber: +formValue.ticketNumber!,
@@ -124,11 +128,27 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
       plantLocation: +formValue.plantLocation!,
       areaLocation: formValue.areaLocation!,
       userEntered: formValue.userEntered,
+      ticket_Entered: dateTime,
+      user_Modified: formValue.userEntered,
+      ticket_Modified: dateTime
+    };
+
+    this.unrestrictedUpdateTicket = {
+      ticketNumber: +formValue.ticketNumber!,
+      partNumber: formValue.partNumber!,
+      storageLocation: +formValue.storageLocation!,
+      description: formValue.description!,
+      unitOfMeasure: formValue.unitOfMeasure!,
+      quantity: formValue.quantity!,
+      plantLocation: +formValue.plantLocation!,
+      areaLocation: formValue.areaLocation!,
+      user_Modified: formValue.userEntered,
+      ticket_Modified: dateTime
     };
 
     if (this.updateTicket) {
       this.yearEndInventoryService.updateUnrestrictedTicket(
-        this.unrestrictedTicket,
+        this.unrestrictedUpdateTicket,
       );
     } else {
       this.yearEndInventoryService.addUnrestrictedTicket(
@@ -355,14 +375,15 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
         ) {
           // Enable other controls when plantLocation, storageLocation, and userEntered are filled
           areaLocationControl!.enable();
-          ticketNumberControl!.enable();
+          if (!this.updateTicket) {
+            ticketNumberControl!.enable();
+          } else {
+            ticketNumberControl.disable();
+          }
           partNumberControl!.enable();
           descriptionControl!.enable();
           unitOfMeasureControl!.enable();
           quantityControl!.enable();
-          // setTimeout(() => {
-          //   this.moveToNextField('areaLocation');
-          // }, 100);
         } else {
           // Disable other controls when plantLocation, storageLocation, or userEntered is empty
           areaLocationControl!.disable();

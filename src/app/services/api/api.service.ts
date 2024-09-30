@@ -103,10 +103,10 @@ export class ApiService {
   }
 
   //Unrestricted Section
-  addUnrestrictedTicket(UnrestrictedTicket: UnrestrictedTicketModel) {
+  addUnrestrictedTicket(unrestrictedTicket: UnrestrictedTicketModel) {
     return this.http.post(
       `${this._baseYearEndInventoryURL}/api/UnrestrictedTickets/addUnrestrictedTicket`,
-      UnrestrictedTicket,
+      unrestrictedTicket,
       { responseType: 'text' },
     );
   }

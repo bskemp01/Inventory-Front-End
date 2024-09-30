@@ -389,7 +389,6 @@ export class YearEndInventoryStateService extends ObservableStore<YearEndInvento
         }),
       )
       .subscribe((response: string) => {
-        console.log('TICKET ADDED');
         const st = this.getState();
         this.setState(st, YearEndInventoryStates.UNRESTRICTED_TICKET_ADDED);
         this.setSnackbar(response, 'Dismiss', 5000);

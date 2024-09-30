@@ -13,6 +13,7 @@ import { YearEndInventoryStateService } from 'src/app/state/year-end-inventory-s
 import { YearEndInventoryStoreState } from 'src/app/models/year-end-inventory-store-state.model';
 import { distinctUntilChangedWithProp } from 'src/app/utils/equality-utils';
 import { SearchSosTicketDialogComponent } from '../../dialog-boxes/search-sos-ticket-dialog/search-sos-ticket-dialog.component';
+import { formatDate } from '@angular/common';
 
 interface LineItem {
   value: number;
@@ -30,7 +31,8 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
   storageLocations = StorageLocations;
   salesOrderData: SosZmmModel[] = [];
   saleOrderDataError = false;
-  sosTicket!: SosTicketModel;
+  sosTicket: SosTicketModel;
+  sosUpdateTicket: SosTicketModel;
   updateTicket = false;
 
   salesOrderSpecificForm!: FormGroup<SalesOrderSpecificModel>;
@@ -106,6 +108,8 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
 
   addUpdateSosTicket() {
     const formValue = this.salesOrderSpecificForm.value;
+    const currentTime = new Date().toISOString();
+    const dateTime = formatDate(currentTime, 'yyyy-MM-ddTHH:mm:ss', 'en-US', '-0500');
     const sl = formValue.plantLocation === '2810' || '2811' ? '9000' : '1000';
 
     this.sosTicket = {
@@ -119,10 +123,27 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
       description: formValue.description,
       quantity: formValue.quantity,
       userEntered: formValue.userEntered,
+      ticket_Entered: dateTime,
+      user_Modified: formValue.userEntered,
+      ticket_Modified: dateTime
+    };
+
+    this.sosUpdateTicket = {
+      plantLocation: +formValue.plantLocation,
+      storageLocation: +sl,
+      areaLocation: formValue.areaLocation,
+      material: formValue.material,
+      ticketNumber: +formValue.ticketNumber,
+      salesOrder: +formValue.salesOrder,
+      lineItem: formValue.lineItem,
+      description: formValue.description,
+      quantity: formValue.quantity,
+      user_Modified: formValue.userEntered,
+      ticket_Modified: dateTime
     };
 
     if (this.updateTicket) {
-      this.yearEndInventoryService.updateSosTicket(this.sosTicket);
+      this.yearEndInventoryService.updateSosTicket(this.sosUpdateTicket);
     } else {
       this.yearEndInventoryService.addSosTicket(this.sosTicket);
     }
@@ -167,7 +188,6 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
     if (nextField) {
       nextField.markAsTouched();
 
-      console.log(this.el.nativeElement);
       const element = this.el.nativeElement.querySelector(
         `[formControlName="${fieldName}"]`,
       );
@@ -343,15 +363,16 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
         ) {
           // Enable other controls when userEntered and plantLocation are filled
           areaLocationControl!.enable();
-          ticketNumberControl!.enable();
+          if (!this.updateTicket) {
+            ticketNumberControl!.enable();
+          } else {
+            ticketNumberControl.disable();
+          }
           salesOrderControl!.enable();
           lineItemControl!.enable();
           materialControl!.enable();
           descriptionControl!.enable();
           quantityControl!.enable();
-          // setTimeout(() => {
-          //   this.moveToNextField('areaLocation');
-          // }, 100);
         } else {
           // Disable other controls when plantLocation or userEntered is empty
           areaLocationControl!.disable();
