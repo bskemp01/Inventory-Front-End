@@ -464,7 +464,7 @@ export class YearEndInventoryStateService extends ObservableStore<YearEndInvento
             errorMessages.errorMessages.unrestrictedTicketErrorMsg,
             err || '',
           );
-          this.setSnackbar(err.error, 'confirm', 5000);
+          this.setSnackbar(err.error, 'Dismiss', 5000);
           return EMPTY;
         }),
       )

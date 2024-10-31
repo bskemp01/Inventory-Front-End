@@ -8,7 +8,7 @@ import {
 import { SalesOrderSpecificModel } from 'src/app/models/forms.model';
 import { SosTicketModel } from 'src/app/models/year-end-inventory-models/sosTicketModel';
 import { SosZmmModel } from 'src/app/models/year-end-inventory-models/sosZmmModel';
-import { Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 import { YearEndInventoryStateService } from 'src/app/state/year-end-inventory-store.service';
 import { YearEndInventoryStoreState } from 'src/app/models/year-end-inventory-store-state.model';
 import { distinctUntilChangedWithProp } from 'src/app/utils/equality-utils';
@@ -34,6 +34,7 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
   sosTicket: SosTicketModel;
   sosUpdateTicket: SosTicketModel;
   updateTicket = false;
+  updateTicketNum = '';
 
   salesOrderSpecificForm!: FormGroup<SalesOrderSpecificModel>;
 
@@ -104,12 +105,23 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
           }
         }),
     );
+
+    this.salesOrderSpecificForm.controls['salesOrder'].valueChanges
+      .pipe(distinctUntilChanged(), debounceTime(500))
+      .subscribe((test) => {
+        this.getSalesOrderData();
+      });
   }
 
   addUpdateSosTicket() {
     const formValue = this.salesOrderSpecificForm.value;
     const currentTime = new Date().toISOString();
-    const dateTime = formatDate(currentTime, 'yyyy-MM-ddTHH:mm:ss', 'en-US', '-0500');
+    const dateTime = formatDate(
+      currentTime,
+      'yyyy-MM-ddTHH:mm:ss',
+      'en-US',
+      '-0500',
+    );
     const sl = formValue.plantLocation === '2810' || '2811' ? '9000' : '1000';
 
     this.sosTicket = {
@@ -125,7 +137,7 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
       userEntered: formValue.userEntered,
       ticket_Entered: dateTime,
       user_Modified: formValue.userEntered,
-      ticket_Modified: dateTime
+      ticket_Modified: dateTime,
     };
 
     this.sosUpdateTicket = {
@@ -133,13 +145,13 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
       storageLocation: +sl,
       areaLocation: formValue.areaLocation,
       material: formValue.material,
-      ticketNumber: +formValue.ticketNumber,
+      ticketNumber: +this.updateTicketNum,
       salesOrder: +formValue.salesOrder,
       lineItem: formValue.lineItem,
       description: formValue.description,
       quantity: formValue.quantity,
       user_Modified: formValue.userEntered,
-      ticket_Modified: dateTime
+      ticket_Modified: dateTime,
     };
 
     if (this.updateTicket) {
@@ -245,6 +257,7 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
             quantity: foundTicket.quantity,
           });
           this.updateTicket = true;
+          this.updateTicketNum = foundTicket.ticketNumber?.toString();
         }
       });
   }
@@ -300,6 +313,7 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
     this.lineItems = [];
     this.salesOrderData = [];
     this.updateTicket = false;
+    this.updateTicketNum = '';
     this.yearEndInventoryService.clearAllStates();
   }
 
@@ -316,6 +330,7 @@ export class SalesOrderSpecificComponent implements OnInit, OnDestroy {
     this.lineItems = [];
     this.salesOrderData = [];
     this.updateTicket = false;
+    this.updateTicketNum = '';
     this.yearEndInventoryService.clearAllStates();
   }
 

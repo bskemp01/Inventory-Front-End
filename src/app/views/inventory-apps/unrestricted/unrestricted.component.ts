@@ -11,7 +11,7 @@ import { UnrestrictedZmmModel } from 'src/app/models/year-end-inventory-models/u
 import { YearEndInventoryStoreState } from 'src/app/models/year-end-inventory-store-state.model';
 import { YearEndInventoryStateService } from 'src/app/state/year-end-inventory-store.service';
 import { SearchUnrestrictedTicketDialogComponent } from '../../dialog-boxes/search-unrestricted-ticket-dialog/search-unrestricted-ticket-dialog.component';
-import { Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 import { distinctUntilChangedWithProp } from 'src/app/utils/equality-utils';
 import { ActiveListData } from 'src/app/models/year-end-inventory-models/activeListData';
 import { formatDate } from '@angular/common';
@@ -25,6 +25,7 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
   plantLocations = PlantLocations;
   storageLocations = StorageLocations;
   updateTicket = false;
+  updateTicketNum = '';
   unrestrictedRowData!: ActiveListData;
   unrestrictedRowDataError = false;
   unrestrictedTicket: UnrestrictedTicketModel;
@@ -105,6 +106,12 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
           }
         }),
     );
+
+    this.unrestrictedForm.controls['partNumber'].valueChanges
+      .pipe(distinctUntilChanged(), debounceTime(500))
+      .subscribe((test) => {
+        this.getUnrestrictedRowData();
+      });
   }
 
   addUnrestrictedTicket() {
@@ -115,8 +122,14 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
     }
 
     const formValue = this.unrestrictedForm.value;
+    console.log(formValue);
     const currentTime = new Date().toISOString();
-    const dateTime = formatDate(currentTime, 'yyyy-MM-ddTHH:mm:ss', 'en-US', '-0500');
+    const dateTime = formatDate(
+      currentTime,
+      'yyyy-MM-ddTHH:mm:ss',
+      'en-US',
+      '-0500',
+    );
 
     this.unrestrictedTicket = {
       ticketNumber: +formValue.ticketNumber!,
@@ -130,11 +143,11 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
       userEntered: formValue.userEntered,
       ticket_Entered: dateTime,
       user_Modified: formValue.userEntered,
-      ticket_Modified: dateTime
+      ticket_Modified: dateTime,
     };
 
     this.unrestrictedUpdateTicket = {
-      ticketNumber: +formValue.ticketNumber!,
+      ticketNumber: +this.updateTicketNum,
       partNumber: formValue.partNumber!,
       storageLocation: +formValue.storageLocation!,
       description: formValue.description!,
@@ -143,7 +156,7 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
       plantLocation: +formValue.plantLocation!,
       areaLocation: formValue.areaLocation!,
       user_Modified: formValue.userEntered,
-      ticket_Modified: dateTime
+      ticket_Modified: dateTime,
     };
 
     if (this.updateTicket) {
@@ -183,6 +196,10 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
         formValue.partNumber.toString(),
       );
     }
+
+    this.unrestrictedForm.patchValue({
+      quantity: null,
+    });
   }
 
   isClearButtonDisabled(): boolean {
@@ -243,6 +260,7 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
             quantity: foundTicket.quantity,
           });
           this.updateTicket = true;
+          this.updateTicketNum = foundTicket.ticketNumber?.toString();
         }
       });
   }
@@ -276,6 +294,7 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
     });
     this.unrestrictedRowData = {};
     this.updateTicket = false;
+    this.updateTicketNum = '';
     this.yearEndInventoryService.clearAllStates();
   }
 
@@ -290,6 +309,7 @@ export class UnrestrictedComponent implements OnInit, OnDestroy {
     });
     this.unrestrictedRowData = {};
     this.updateTicket = false;
+    this.updateTicketNum = '';
     this.yearEndInventoryService.clearAllStates();
   }
 
